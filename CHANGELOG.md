@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/sdkks/lazyfox/compare/v1.0.2...v1.0.3) (2026-05-19)
+
+
+### Bug Fixes
+
+* add @semantic-release/npm to bump package.json version on release ([4603534](https://github.com/sdkks/lazyfox/commit/4603534870203d50e33faca12ead92bde24a0b3e))
+
 ## [1.0.2](https://github.com/sdkks/lazyfox/compare/v1.0.1...v1.0.2) (2026-05-19)
 
 
