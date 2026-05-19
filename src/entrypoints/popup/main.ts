@@ -26,8 +26,8 @@ function getSelect(id: string): HTMLSelectElement {
 const btnSleepCurrent = getButton('btn-sleep-current');
 const btnSleepAll = getButton('btn-sleep-all');
 const btnWakeAll = getButton('btn-wake-all');
-const btnAmphetamine = getButton('btn-amphetamine');
-const amphetamineTimer = $('amphetamine-timer') as HTMLParagraphElement;
+const btnRabbitScent = getButton('btn-rabbit-scent');
+const scentTimer = $('scent-timer') as HTMLParagraphElement;
 
 const timeoutSlider = getInput('timeout-slider');
 const timeoutValue = $('timeout-value');
@@ -49,8 +49,8 @@ const errorContainer = $('error-container');
 
 /* ---------- State ---------- */
 let errorTimer: ReturnType<typeof setTimeout> | null = null;
-let amphetamineShotExpiry: number | null = null;
-let amphetamineCountdownInterval: ReturnType<typeof setInterval> | null = null;
+let scentExpiry: number | null = null;
+let scentCountdownInterval: ReturnType<typeof setInterval> | null = null;
 let settingsDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 let settingsSaveGeneration = 0;
 
@@ -89,7 +89,7 @@ function setButtonLoading(btn: HTMLButtonElement, loading: boolean): void {
   }
 }
 
-/* ---------- Sleep / Wake / Amphetamine actions ---------- */
+/* ---------- Sleep / Wake / Rabbit Scent actions ---------- */
 
 async function handleSleepCurrent(): Promise<void> {
   setButtonLoading(btnSleepCurrent, true);
@@ -133,64 +133,64 @@ async function handleWakeAll(): Promise<void> {
   }
 }
 
-async function handleAmphetamine(): Promise<void> {
-  setButtonLoading(btnAmphetamine, true);
+async function handleRabbitScent(): Promise<void> {
+  setButtonLoading(btnRabbitScent, true);
   try {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) {
       showError('No active tab found');
       return;
     }
-    const res = await sendCommand({ action: 'giveAmphetamineShot', tabId: tab.id });
+    const res = await sendCommand({ action: 'giveRabbitScent', tabId: tab.id });
     if (!res.success) {
-      showError(res.error ?? 'Failed to give amphetamine shot');
+      showError(res.error ?? 'Failed to give rabbit scent');
       return;
     }
 
     const configRes = await sendMessage({ action: 'getConfig' });
     const duration =
-      configRes.action === 'configData' ? configRes.data.amphetamineDurationMinutes : 60;
+      configRes.action === 'configData' ? configRes.data.rabbitScentDurationMinutes : 60;
 
-    amphetamineShotExpiry = Date.now() + duration * 60 * 1000;
-    updateAmphetamineCountdown();
-    startAmphetamineCountdown();
+    scentExpiry = Date.now() + duration * 60 * 1000;
+    updateScentCountdown();
+    startScentCountdown();
   } catch (err) {
-    showError('Failed to give amphetamine shot');
-    log.error('giveAmphetamineShot error:', err);
+    showError('Failed to give rabbit scent');
+    log.error('giveRabbitScent error:', err);
   } finally {
-    setButtonLoading(btnAmphetamine, false);
+    setButtonLoading(btnRabbitScent, false);
   }
 }
 
-function updateAmphetamineCountdown(): void {
-  if (amphetamineShotExpiry === null) return;
-  const remaining = amphetamineShotExpiry - Date.now();
+function updateScentCountdown(): void {
+  if (scentExpiry === null) return;
+  const remaining = scentExpiry - Date.now();
   if (remaining <= 0) {
-    amphetamineTimer.textContent = '';
-    stopAmphetamineCountdown();
+    scentTimer.textContent = '';
+    stopScentCountdown();
     return;
   }
   const minutes = Math.ceil(remaining / 60000);
-  amphetamineTimer.textContent = `Amphetamine active: ${minutes} min remaining`;
+  scentTimer.textContent = `Rabbit scent active: ${minutes} min remaining`;
 }
 
-function startAmphetamineCountdown(): void {
-  stopAmphetamineCountdown();
-  amphetamineCountdownInterval = setInterval(() => {
-    updateAmphetamineCountdown();
-    if (amphetamineShotExpiry && amphetamineShotExpiry <= Date.now()) {
-      stopAmphetamineCountdown();
-      amphetamineTimer.textContent = '';
+function startScentCountdown(): void {
+  stopScentCountdown();
+  scentCountdownInterval = setInterval(() => {
+    updateScentCountdown();
+    if (scentExpiry && scentExpiry <= Date.now()) {
+      stopScentCountdown();
+      scentTimer.textContent = '';
     }
   }, 30000);
 }
 
-function stopAmphetamineCountdown(): void {
-  if (amphetamineCountdownInterval) {
-    clearInterval(amphetamineCountdownInterval);
-    amphetamineCountdownInterval = null;
+function stopScentCountdown(): void {
+  if (scentCountdownInterval) {
+    clearInterval(scentCountdownInterval);
+    scentCountdownInterval = null;
   }
-  amphetamineShotExpiry = null;
+  scentExpiry = null;
 }
 
 /* ---------- Settings ---------- */
@@ -392,7 +392,7 @@ async function init(): Promise<void> {
 btnSleepCurrent.addEventListener('click', () => void handleSleepCurrent());
 btnSleepAll.addEventListener('click', () => void handleSleepAll());
 btnWakeAll.addEventListener('click', () => void handleWakeAll());
-btnAmphetamine.addEventListener('click', () => void handleAmphetamine());
+btnRabbitScent.addEventListener('click', () => void handleRabbitScent());
 btnDenAdd.addEventListener('click', () => void handleDenAdd());
 denInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {

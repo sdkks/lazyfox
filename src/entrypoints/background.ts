@@ -2,14 +2,14 @@ import type { OutgoingMessage, StoredTabInfo, TabSummary } from '../types';
 import { DEFAULT_CONFIG } from '../config';
 import {
   registerCheckAlarm,
-  registerAmphetamineAlarm,
-  clearAmphetamineAlarm,
+  registerRabbitScentAlarm,
+  clearRabbitScentAlarm,
 } from '../utils/alarms';
 import { createLogger } from '../utils/logger';
 import {
   configStorage,
   sleepingTabsStorage,
-  amphetamineShotsStorage,
+  rabbitScentsStorage,
   activityStorage,
 } from '../utils/storage';
 import { isEligible, generateUUID } from '../utils/tabEligibility';
@@ -39,12 +39,12 @@ export default defineBackground(() => {
       await handleCheckTabs();
       return;
     }
-    if (alarm.name.startsWith('amphetamine_')) {
-      const uuid = alarm.name.slice('amphetamine_'.length);
-      const shots = await amphetamineShotsStorage.getValue();
+    if (alarm.name.startsWith('rabbitScent_')) {
+      const uuid = alarm.name.slice('rabbitScent_'.length);
+      const shots = await rabbitScentsStorage.getValue();
       delete shots[uuid];
-      await amphetamineShotsStorage.setValue(shots);
-      log.info('Amphetamine shot expired', { uuid });
+      await rabbitScentsStorage.setValue(shots);
+      log.info('Rabbit scent expired', { uuid });
     }
   });
 
@@ -153,30 +153,30 @@ async function handleMessage(message: OutgoingMessage) {
       });
       return { action: 'ack', success: true } as const;
     }
-    case 'giveAmphetamineShot': {
+    case 'giveRabbitScent': {
       const tab = await browser.tabs.get(message.tabId);
       const url = tab.url ?? '';
       if (!url) return { action: 'ack', success: false, error: 'Tab has no URL' } as const;
       const config = await configStorage.getValue();
       const uuid = generateUUID(url);
-      const expiresAt = Date.now() + config.amphetamineDurationMinutes * 60 * 1000;
-      const shots = await amphetamineShotsStorage.getValue();
+      const expiresAt = Date.now() + config.rabbitScentDurationMinutes * 60 * 1000;
+      const shots = await rabbitScentsStorage.getValue();
       shots[uuid] = {
         uuid,
         tabId: tab.id ?? -1,
         expiresAt,
-        alarmName: `amphetamine_${uuid}`,
+        alarmName: `rabbitScent_${uuid}`,
       };
-      await amphetamineShotsStorage.setValue(shots);
-      registerAmphetamineAlarm(uuid, config.amphetamineDurationMinutes * 60 * 1000);
-      log.info('Amphetamine shot granted', { uuid, tabId: tab.id });
+      await rabbitScentsStorage.setValue(shots);
+      registerRabbitScentAlarm(uuid, config.rabbitScentDurationMinutes * 60 * 1000);
+      log.info('Rabbit scent granted', { uuid, tabId: tab.id });
       return { action: 'ack', success: true } as const;
     }
-    case 'removeAmphetamineShot': {
-      const shots = await amphetamineShotsStorage.getValue();
+    case 'removeRabbitScent': {
+      const shots = await rabbitScentsStorage.getValue();
       delete shots[message.uuid];
-      await amphetamineShotsStorage.setValue(shots);
-      await clearAmphetamineAlarm(message.uuid);
+      await rabbitScentsStorage.setValue(shots);
+      await clearRabbitScentAlarm(message.uuid);
       return { action: 'ack', success: true } as const;
     }
     case 'getTabInfo': {
@@ -319,14 +319,14 @@ async function wakeTab(uuid: string): Promise<void> {
   delete sleeping[uuid];
   await sleepingTabsStorage.setValue(sleeping);
 
-  const shots = await amphetamineShotsStorage.getValue();
+  const shots = await rabbitScentsStorage.getValue();
   if (shots[uuid]) {
     delete shots[uuid];
-    await amphetamineShotsStorage.setValue(shots);
+    await rabbitScentsStorage.setValue(shots);
   }
 
   try {
-    await clearAmphetamineAlarm(uuid);
+    await clearRabbitScentAlarm(uuid);
   } catch {
     // Alarm may not exist
   }
@@ -334,8 +334,8 @@ async function wakeTab(uuid: string): Promise<void> {
 
 async function getEligibilityState() {
   const [shots, activity] = await Promise.all([
-    amphetamineShotsStorage.getValue(),
+    rabbitScentsStorage.getValue(),
     activityStorage.getValue(),
   ]);
-  return { amphetamineShots: shots, activity };
+  return { rabbitScents: shots, activity };
 }

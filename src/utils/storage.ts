@@ -1,12 +1,12 @@
 import type { LazyFoxConfig } from '../config';
-import type { AmphetamineShot, StoredTabInfo } from '../types';
+import type { RabbitScent, StoredTabInfo } from '../types';
 import { storage } from 'wxt/utils/storage';
 
 export const configStorage = storage.defineItem<LazyFoxConfig>('sync:lazyfoxConfig', {
   fallback: {
     sleepTimeoutMinutes: 60,
     sleepMode: 'full',
-    amphetamineDurationMinutes: 60,
+    rabbitScentDurationMinutes: 60,
     den: [],
     preservePinnedTabs: true,
     sleepAudibleTabs: false,
@@ -21,8 +21,8 @@ export const sleepingTabsStorage = storage.defineItem<Record<string, StoredTabIn
   { fallback: {} }
 );
 
-export const amphetamineShotsStorage = storage.defineItem<Record<string, AmphetamineShot>>(
-  'local:amphetamineShots',
+export const rabbitScentsStorage = storage.defineItem<Record<string, RabbitScent>>(
+  'local:rabbitScents',
   { fallback: {} }
 );
 

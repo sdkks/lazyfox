@@ -19,7 +19,7 @@ export interface DenEntry {
   createdAt: number;
 }
 
-export interface AmphetamineShot {
+export interface RabbitScent {
   uuid: string;
   tabId: number;
   expiresAt: number;
@@ -46,8 +46,8 @@ export type OutgoingMessage =
   | { action: 'saveConfig'; config: Partial<LazyFoxConfig> }
   | { action: 'addDenEntry'; entry: Omit<DenEntry, 'id' | 'createdAt'> }
   | { action: 'removeDenEntry'; id: string }
-  | { action: 'giveAmphetamineShot'; tabId: number }
-  | { action: 'removeAmphetamineShot'; uuid: string }
+  | { action: 'giveRabbitScent'; tabId: number }
+  | { action: 'removeRabbitScent'; uuid: string }
   | { action: 'getTabInfo'; uuid: string }
   | { action: 'getSleepingTabCount' }
   | { action: 'getAllTabs' };

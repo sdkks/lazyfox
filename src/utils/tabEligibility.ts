@@ -1,5 +1,5 @@
 import type { LazyFoxConfig } from '../config';
-import type { AmphetamineShot, DenEntry } from '../types';
+import type { RabbitScent, DenEntry } from '../types';
 
 const RESTRICTED_PROTOCOLS = [
   'chrome:',
@@ -24,7 +24,7 @@ export interface TabInfo {
 }
 
 export interface EligibilityState {
-  amphetamineShots: Record<string, AmphetamineShot>;
+  rabbitScents: Record<string, RabbitScent>;
   activity: Record<number, { lastActive: number }>;
 }
 
@@ -89,8 +89,8 @@ export function isEligible(
     return { eligible: false, reason: 'URL in den' };
   }
 
-  if (hasActiveAmphetamineShot(uuid, state.amphetamineShots)) {
-    return { eligible: false, reason: 'Active amphetamine shot' };
+  if (hasActiveRabbitScent(uuid, state.rabbitScents)) {
+    return { eligible: false, reason: 'Active rabbit scent' };
   }
 
   return { eligible: true };
@@ -134,7 +134,7 @@ function wildcardMatch(str: string, pattern: string): boolean {
   return regex.test(str);
 }
 
-function hasActiveAmphetamineShot(uuid: string, shots: Record<string, AmphetamineShot>): boolean {
+function hasActiveRabbitScent(uuid: string, shots: Record<string, RabbitScent>): boolean {
   const shot = shots[uuid];
   if (!shot) return false;
   return shot.expiresAt > Date.now();

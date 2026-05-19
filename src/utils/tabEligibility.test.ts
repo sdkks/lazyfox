@@ -7,7 +7,7 @@ function makeConfig(overrides?: Partial<LazyFoxConfig>): LazyFoxConfig {
   return {
     sleepTimeoutMinutes: 60,
     sleepMode: 'full',
-    amphetamineDurationMinutes: 60,
+    rabbitScentDurationMinutes: 60,
     den: [],
     preservePinnedTabs: true,
     sleepAudibleTabs: false,
@@ -20,7 +20,7 @@ function makeConfig(overrides?: Partial<LazyFoxConfig>): LazyFoxConfig {
 
 function makeState(overrides?: Partial<EligibilityState>): EligibilityState {
   return {
-    amphetamineShots: {},
+    rabbitScents: {},
     activity: {},
     ...overrides,
   };
@@ -197,38 +197,38 @@ describe('isEligible', () => {
     expect(result.eligible).toBe(false);
   });
 
-  it('active amphetamine shot', () => {
+  it('active rabbit scent', () => {
     const uuid = generateUUID('https://example.com/page');
     const result = isEligible(
       baseTab,
       makeConfig(),
       makeState({
-        amphetamineShots: {
+        rabbitScents: {
           [uuid]: {
             uuid,
             tabId: 1,
             expiresAt: Date.now() + 60 * 60 * 1000,
-            alarmName: `amphetamine_${uuid}`,
+            alarmName: `rabbitScent_${uuid}`,
           },
         },
       })
     );
     expect(result.eligible).toBe(false);
-    expect(result.reason).toBe('Active amphetamine shot');
+    expect(result.reason).toBe('Active rabbit scent');
   });
 
-  it('expired amphetamine shot', () => {
+  it('expired rabbit scent', () => {
     const uuid = generateUUID('https://example.com/page');
     const result = isEligible(
       baseTab,
       makeConfig(),
       makeState({
-        amphetamineShots: {
+        rabbitScents: {
           [uuid]: {
             uuid,
             tabId: 1,
             expiresAt: Date.now() - 60 * 60 * 1000,
-            alarmName: `amphetamine_${uuid}`,
+            alarmName: `rabbitScent_${uuid}`,
           },
         },
       })

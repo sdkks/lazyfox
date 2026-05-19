@@ -1,7 +1,7 @@
 export interface LazyFoxConfig {
   sleepTimeoutMinutes: number;
   sleepMode: 'full' | 'discardOnly';
-  amphetamineDurationMinutes: number;
+  rabbitScentDurationMinutes: number;
   den: DenEntry[];
   preservePinnedTabs: boolean;
   sleepAudibleTabs: boolean;
@@ -15,7 +15,7 @@ import type { DenEntry } from './types';
 export const DEFAULT_CONFIG: LazyFoxConfig = {
   sleepTimeoutMinutes: 60,
   sleepMode: 'full',
-  amphetamineDurationMinutes: 60,
+  rabbitScentDurationMinutes: 60,
   den: [],
   preservePinnedTabs: true,
   sleepAudibleTabs: false,
