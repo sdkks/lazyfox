@@ -31,6 +31,7 @@ export default defineConfig({
         id: 'lazyfox@tabber.local',
         strict_min_version: '115.0',
         data_collection_permissions: {
+          required: [],
           // @ts-expect-error — Firefox requires 'usage', WXT types haven't added it
           usage: false,
           technical_interaction: false,
