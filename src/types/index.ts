@@ -48,6 +48,7 @@ export type OutgoingMessage =
   | { action: 'removeDenEntry'; id: string }
   | { action: 'giveRabbitScent'; tabId: number }
   | { action: 'removeRabbitScent'; uuid: string }
+  | { action: 'getRabbitScentStatus'; tabId: number }
   | { action: 'getTabInfo'; uuid: string }
   | { action: 'getSleepingTabCount' }
   | { action: 'getAllTabs' };
@@ -57,4 +58,10 @@ export type IncomingResponse =
   | { action: 'tabInfoData'; data: StoredTabInfo | null }
   | { action: 'sleepingTabCount'; count: number }
   | { action: 'allTabsData'; tabs: TabSummary[] }
+  | {
+      action: 'rabbitScentStatusData';
+      active: boolean;
+      remainingMs: number | null;
+      uuid: string | null;
+    }
   | { action: 'ack'; success: boolean; error?: string };

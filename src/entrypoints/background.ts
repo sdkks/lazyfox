@@ -179,6 +179,34 @@ async function handleMessage(message: OutgoingMessage) {
       await clearRabbitScentAlarm(message.uuid);
       return { action: 'ack', success: true } as const;
     }
+    case 'getRabbitScentStatus': {
+      const tab = await browser.tabs.get(message.tabId);
+      const url = tab.url ?? '';
+      if (!url)
+        return {
+          action: 'rabbitScentStatusData',
+          active: false,
+          remainingMs: null,
+          uuid: null,
+        } as const;
+      const uuid = generateUUID(url);
+      const scents = await rabbitScentsStorage.getValue();
+      const scent = scents[uuid];
+      if (scent && scent.expiresAt > Date.now()) {
+        return {
+          action: 'rabbitScentStatusData',
+          active: true,
+          remainingMs: scent.expiresAt - Date.now(),
+          uuid,
+        } as const;
+      }
+      return {
+        action: 'rabbitScentStatusData',
+        active: false,
+        remainingMs: null,
+        uuid: null,
+      } as const;
+    }
     case 'getTabInfo': {
       const sleeping = await sleepingTabsStorage.getValue();
       const data = sleeping[message.uuid] ?? null;

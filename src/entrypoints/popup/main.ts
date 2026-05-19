@@ -50,6 +50,7 @@ const errorContainer = $('error-container');
 /* ---------- State ---------- */
 let errorTimer: ReturnType<typeof setTimeout> | null = null;
 let scentExpiry: number | null = null;
+let scentUuid: string | null = null;
 let scentCountdownInterval: ReturnType<typeof setInterval> | null = null;
 let settingsDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 let settingsSaveGeneration = 0;
@@ -141,6 +142,16 @@ async function handleRabbitScent(): Promise<void> {
       showError('No active tab found');
       return;
     }
+
+    // Toggle: if scent is active, remove it
+    if (scentUuid) {
+      await sendCommand({ action: 'removeRabbitScent', uuid: scentUuid });
+      stopScentCountdown();
+      scentTimer.textContent = '';
+      btnRabbitScent.textContent = 'Rabbit Scent';
+      return;
+    }
+
     const res = await sendCommand({ action: 'giveRabbitScent', tabId: tab.id });
     if (!res.success) {
       showError(res.error ?? 'Failed to give rabbit scent');
@@ -155,8 +166,8 @@ async function handleRabbitScent(): Promise<void> {
     updateScentCountdown();
     startScentCountdown();
   } catch (err) {
-    showError('Failed to give rabbit scent');
-    log.error('giveRabbitScent error:', err);
+    showError('Failed to update rabbit scent');
+    log.error('handleRabbitScent error:', err);
   } finally {
     setButtonLoading(btnRabbitScent, false);
   }
@@ -167,11 +178,13 @@ function updateScentCountdown(): void {
   const remaining = scentExpiry - Date.now();
   if (remaining <= 0) {
     scentTimer.textContent = '';
+    btnRabbitScent.textContent = 'Rabbit Scent';
     stopScentCountdown();
     return;
   }
   const minutes = Math.ceil(remaining / 60000);
-  scentTimer.textContent = `Rabbit scent active: ${minutes} min remaining`;
+  scentTimer.textContent = `Scent active: ${minutes} min remaining`;
+  btnRabbitScent.textContent = 'Remove Rabbit Scent';
 }
 
 function startScentCountdown(): void {
@@ -191,6 +204,7 @@ function stopScentCountdown(): void {
     scentCountdownInterval = null;
   }
   scentExpiry = null;
+  scentUuid = null;
 }
 
 /* ---------- Settings ---------- */
@@ -368,9 +382,10 @@ async function updateSleepingCount(): Promise<void> {
 
 async function init(): Promise<void> {
   try {
-    const [configRes, countRes] = await Promise.all([
+    const [configRes, countRes, tabRes] = await Promise.all([
       sendMessage({ action: 'getConfig' }),
       sendMessage({ action: 'getSleepingTabCount' }),
+      browser.tabs.query({ active: true, currentWindow: true }),
     ]);
 
     if (configRes.action === 'configData') {
@@ -380,6 +395,18 @@ async function init(): Promise<void> {
     if (countRes.action === 'sleepingTabCount') {
       sleepingCount.textContent =
         countRes.count === 1 ? '1 tab sleeping' : `${countRes.count} tabs sleeping`;
+    }
+
+    // Restore rabbit scent countdown if active for current tab
+    const activeTab = tabRes[0];
+    if (activeTab?.id) {
+      const scentRes = await sendMessage({ action: 'getRabbitScentStatus', tabId: activeTab.id });
+      if (scentRes.action === 'rabbitScentStatusData' && scentRes.active && scentRes.remainingMs) {
+        scentUuid = scentRes.uuid;
+        scentExpiry = Date.now() + scentRes.remainingMs;
+        updateScentCountdown();
+        startScentCountdown();
+      }
     }
   } catch (err) {
     showError('Failed to load popup data');
