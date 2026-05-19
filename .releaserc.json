@@ -11,6 +11,15 @@
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
-    "@semantic-release/github"
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          { "path": ".output/*-chrome.zip", "label": "Chrome Extension (MV3)" },
+          { "path": ".output/*-firefox.zip", "label": "Firefox Extension" },
+          { "path": ".output/*-sources.zip", "label": "Firefox Sources (review)" }
+        ]
+      }
+    ]
   ]
 }

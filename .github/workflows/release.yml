@@ -24,7 +24,9 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install
       - run: pnpm build
+      - run: pnpm build:firefox
       - run: pnpm test
+      - run: pnpm zip && pnpm zip:firefox
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

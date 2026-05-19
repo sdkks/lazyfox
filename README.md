@@ -58,13 +58,18 @@ Your list of protected URL patterns. Tabs matching a den entry are never put to 
 
 ## Installation
 
-### Chrome Web Store
-
-Install from the [Chrome Web Store](#) (link coming soon).
-
 ### Firefox Add-ons
 
 Install from [Firefox Add-ons](#) (link coming soon).
+
+### Chrome (Manual Sideload)
+
+Chrome users can install from the ZIP attached to the [latest GitHub Release](https://github.com/tabber/lazyfox/releases):
+
+1. Download `lazyfox-*-chrome.zip` from the latest release
+2. Unzip it
+3. Go to `chrome://extensions`, enable "Developer mode"
+4. Click "Load unpacked" and select the unzipped folder
 
 ### Development Build
 
