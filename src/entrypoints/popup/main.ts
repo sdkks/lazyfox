@@ -191,12 +191,15 @@ function updateScentCountdown(): void {
 }
 
 function startScentCountdown(): void {
-  stopScentCountdown();
+  if (scentCountdownInterval) {
+    clearInterval(scentCountdownInterval);
+  }
   scentCountdownInterval = setInterval(() => {
     updateScentCountdown();
-    if (scentExpiry && scentExpiry <= Date.now()) {
+    if (scentExpiry !== null && scentExpiry <= Date.now()) {
       stopScentCountdown();
       scentTimer.textContent = '';
+      btnRabbitScent.textContent = 'Rabbit Scent';
     }
   }, 30000);
 }
