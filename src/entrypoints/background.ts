@@ -170,7 +170,7 @@ async function handleMessage(message: OutgoingMessage) {
       await rabbitScentsStorage.setValue(shots);
       registerRabbitScentAlarm(uuid, config.rabbitScentDurationMinutes * 60 * 1000);
       log.info('Rabbit scent granted', { uuid, tabId: tab.id });
-      return { action: 'ack', success: true } as const;
+      return { action: 'ack', success: true, uuid } as const;
     }
     case 'removeRabbitScent': {
       const shots = await rabbitScentsStorage.getValue();

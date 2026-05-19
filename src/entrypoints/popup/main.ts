@@ -152,16 +152,13 @@ async function handleRabbitScent(): Promise<void> {
       return;
     }
 
-    const res = await sendCommand({ action: 'giveRabbitScent', tabId: tab.id });
-    if (!res.success) {
-      showError(res.error ?? 'Failed to give rabbit scent');
+    const res = await sendMessage({ action: 'giveRabbitScent', tabId: tab.id });
+    if (res.action !== 'ack' || !res.success) {
+      showError('Failed to give rabbit scent');
       return;
     }
-
-    // Fetch the UUID from the background so we can remove the scent later
-    const statusRes = await sendMessage({ action: 'getRabbitScentStatus', tabId: tab.id });
-    if (statusRes.action === 'rabbitScentStatusData' && statusRes.uuid) {
-      scentUuid = statusRes.uuid;
+    if ('uuid' in res && typeof res.uuid === 'string') {
+      scentUuid = res.uuid;
     }
 
     const configRes = await sendMessage({ action: 'getConfig' });
