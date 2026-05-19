@@ -158,6 +158,12 @@ async function handleRabbitScent(): Promise<void> {
       return;
     }
 
+    // Fetch the UUID from the background so we can remove the scent later
+    const statusRes = await sendMessage({ action: 'getRabbitScentStatus', tabId: tab.id });
+    if (statusRes.action === 'rabbitScentStatusData' && statusRes.uuid) {
+      scentUuid = statusRes.uuid;
+    }
+
     const configRes = await sendMessage({ action: 'getConfig' });
     const duration =
       configRes.action === 'configData' ? configRes.data.rabbitScentDurationMinutes : 60;

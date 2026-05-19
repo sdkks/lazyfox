@@ -1,6 +1,6 @@
 {
   "name": "lazyfox",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Lethargic browser tabs. Save energy.",
   "private": true,
   "license": "MIT",
@@ -19,7 +19,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "release": "semantic-release",
+    "release:dry": "semantic-release --dry-run"
   },
   "pnpm": {
     "overrides": {
@@ -41,6 +43,9 @@
     "typescript": "~5.8.0",
     "typescript-eslint": "^8.0.0",
     "vitest": "^3.0.0",
-    "wxt": "^0.20.0"
+    "wxt": "^0.20.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "semantic-release": "^25.0.3"
   }
 }
