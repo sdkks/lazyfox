@@ -1,0 +1,7 @@
+.output/
+.wxt/
+dist/
+node_modules/
+.env
+.env.submit
+*.tsbuildinfo
