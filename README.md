@@ -28,7 +28,15 @@ At most 5 tabs are slept per check cycle to avoid browser throttling.
 
 ### Rabbit Scent
 
-A temporary keep-awake for a specific tab. Give a tab a "rabbit scent" and the fox won't chase it — the tab stays awake for the configured duration (default 60 minutes), regardless of the sleep timeout. Useful when you're stepping away from a tab briefly but don't want it to sleep. Rabbit scents can be removed early from the popup.
+A temporary keep-awake for **one specific tab**. Give the current tab a "rabbit scent" and that tab alone stays awake for the configured duration (default 60 minutes), regardless of the sleep timeout. Other tabs continue to sleep normally.
+
+Key behaviors:
+
+- **Per-tab, not per-domain** — the scent tracks the tab by its browser tab ID. If you navigate to a different URL in the same tab, the scent stays active. If you close the tab, the scent is gone.
+- **Timer persists across popup closes** — stored in browser session storage. Reopening the popup on the scented tab restores the countdown. Opening the popup on a different tab shows no timer (it has no scent).
+- **Only one active scent** — giving a new scent to a tab replaces any previous one. You can have one active scent at a time.
+- **Remove early** — click "Remove Rabbit Scent" to cancel the scent before it expires.
+- **Use Den for domain-wide protection** — if you want ALL tabs on `github.com` to stay awake, add it to the Den instead.
 
 (The name comes from the macOS tool "Amphetamine" which keeps computers awake, adapted to fit the fox theme — the fox avoids rabbit-scented tabs.)
 
