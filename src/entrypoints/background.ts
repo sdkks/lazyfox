@@ -11,6 +11,7 @@ import {
   sleepingTabsStorage,
   rabbitScentsStorage,
   activityStorage,
+  activeScentState,
 } from '../utils/storage';
 import { isEligible, generateUUID } from '../utils/tabEligibility';
 
@@ -44,6 +45,7 @@ export default defineBackground(() => {
       const shots = await rabbitScentsStorage.getValue();
       delete shots[uuid];
       await rabbitScentsStorage.setValue(shots);
+      await activeScentState.setValue({ tabId: null, uuid: null, expiresAt: null });
       log.info('Rabbit scent expired', { uuid });
     }
   });
@@ -169,6 +171,7 @@ async function handleMessage(message: OutgoingMessage) {
       };
       await rabbitScentsStorage.setValue(shots);
       registerRabbitScentAlarm(uuid, config.rabbitScentDurationMinutes * 60 * 1000);
+      await activeScentState.setValue({ tabId: tab.id ?? null, uuid, expiresAt });
       log.info('Rabbit scent granted', { uuid, tabId: tab.id });
       return { action: 'ack', success: true, uuid } as const;
     }
@@ -177,6 +180,7 @@ async function handleMessage(message: OutgoingMessage) {
       delete shots[message.uuid];
       await rabbitScentsStorage.setValue(shots);
       await clearRabbitScentAlarm(message.uuid);
+      await activeScentState.setValue({ tabId: null, uuid: null, expiresAt: null });
       return { action: 'ack', success: true } as const;
     }
     case 'getRabbitScentStatus': {

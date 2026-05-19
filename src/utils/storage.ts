@@ -30,3 +30,9 @@ export const activityStorage = storage.defineItem<Record<number, { lastActive: n
   'local:tabActivity',
   { fallback: {} }
 );
+
+export const activeScentState = storage.defineItem<{
+  tabId: number | null;
+  uuid: string | null;
+  expiresAt: number | null;
+}>('session:activeScentState', { fallback: { tabId: null, uuid: null, expiresAt: null } });

@@ -1,6 +1,7 @@
 import type { OutgoingMessage, IncomingResponse, DenEntry } from '../../types';
 import type { LazyFoxConfig } from '../../config';
 import { createLogger } from '../../utils/logger';
+import { activeScentState } from '../../utils/storage';
 
 const log = createLogger('popup');
 
@@ -403,13 +404,14 @@ async function init(): Promise<void> {
         countRes.count === 1 ? '1 tab sleeping' : `${countRes.count} tabs sleeping`;
     }
 
-    // Restore rabbit scent countdown if active for current tab
+    // Restore rabbit scent countdown from session storage
+    const scentState = await activeScentState.getValue();
     const activeTab = tabRes[0];
-    if (activeTab?.id) {
-      const scentRes = await sendMessage({ action: 'getRabbitScentStatus', tabId: activeTab.id });
-      if (scentRes.action === 'rabbitScentStatusData' && scentRes.active && scentRes.remainingMs) {
-        scentUuid = scentRes.uuid;
-        scentExpiry = Date.now() + scentRes.remainingMs;
+    if (scentState.expiresAt && scentState.expiresAt > Date.now()) {
+      // Scent is active globally — check if it belongs to the current tab
+      if (activeTab?.id !== undefined && scentState.tabId === activeTab.id) {
+        scentUuid = scentState.uuid;
+        scentExpiry = scentState.expiresAt;
         updateScentCountdown();
         startScentCountdown();
       }
