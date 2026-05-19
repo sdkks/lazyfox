@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/sdkks/lazyfox/compare/v1.0.1...v1.0.2) (2026-05-19)
+
+
+### Bug Fixes
+
+* persist rabbit scent timer in browser.storage.session ([90d224d](https://github.com/sdkks/lazyfox/commit/90d224d181975afbda84826a9e00e22b165a8708))
+
 ## [1.0.1](https://github.com/sdkks/lazyfox/compare/v1.0.0...v1.0.1) (2026-05-19)
 
 
