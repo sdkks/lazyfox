@@ -2,6 +2,10 @@
 
 LazyFox is a lean, open-source browser extension that automatically puts inactive tabs to sleep, saving CPU, GPU, and memory. Think of it as a lazy fox — it only chases (keeps awake) the tab you're actively using, and lets the rest nap.
 
+<div style="display: flex; justify-content: center; align-items: center;">
+    <img src="./lazyfox-ss.jpg" alt="LazyFox screenshot" style="width: 30%;">
+</div>
+
 ## How It Works
 
 **Tab Sleeping**: When a tab sits inactive longer than your configured timeout (default 60 minutes), LazyFox replaces the page with a lightweight "sleeping page" that shows the tab's title, URL, and a wake button. The original page state is saved so it can be restored instantly. The sleeping page itself uses near-zero resources.
@@ -126,18 +130,18 @@ public/
 
 ### Scripts
 
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start dev mode for Chrome |
-| `pnpm dev:firefox` | Start dev mode for Firefox |
-| `pnpm build` | Production build for Chrome |
-| `pnpm build:firefox` | Production build for Firefox |
-| `pnpm zip` | Create Chrome distribution ZIP |
-| `pnpm zip:firefox` | Create Firefox distribution ZIP (includes sources) |
-| `pnpm typecheck` | TypeScript type checking |
-| `pnpm lint` | ESLint |
-| `pnpm format` | Prettier |
-| `pnpm test` | Vitest test suite |
+| Script               | Description                                        |
+| -------------------- | -------------------------------------------------- |
+| `pnpm dev`           | Start dev mode for Chrome                          |
+| `pnpm dev:firefox`   | Start dev mode for Firefox                         |
+| `pnpm build`         | Production build for Chrome                        |
+| `pnpm build:firefox` | Production build for Firefox                       |
+| `pnpm zip`           | Create Chrome distribution ZIP                     |
+| `pnpm zip:firefox`   | Create Firefox distribution ZIP (includes sources) |
+| `pnpm typecheck`     | TypeScript type checking                           |
+| `pnpm lint`          | ESLint                                             |
+| `pnpm format`        | Prettier                                           |
+| `pnpm test`          | Vitest test suite                                  |
 
 ## License
 
