@@ -7,7 +7,6 @@ export default defineConfig({
     name: 'LazyFox',
     short_name: 'LazyFox',
     description: 'Save energy by automatically putting inactive tabs to sleep.',
-    version: '1.0.0',
     action: {
       default_title: 'LazyFox',
       default_icon: {
