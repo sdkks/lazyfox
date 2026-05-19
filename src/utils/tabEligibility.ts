@@ -84,12 +84,12 @@ export function isEligible(
     }
   }
 
-  const uuid = generateUUID(tab.url);
   if (isInDen(tab.url, config.den)) {
     return { eligible: false, reason: 'URL in den' };
   }
 
-  if (hasActiveRabbitScent(uuid, state.rabbitScents)) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (tab.id !== undefined && hasActiveRabbitScent(tab.id, state.rabbitScents)) {
     return { eligible: false, reason: 'Active rabbit scent' };
   }
 
@@ -134,10 +134,14 @@ function wildcardMatch(str: string, pattern: string): boolean {
   return regex.test(str);
 }
 
-function hasActiveRabbitScent(uuid: string, shots: Record<string, RabbitScent>): boolean {
-  const shot = shots[uuid];
-  if (!shot) return false;
-  return shot.expiresAt > Date.now();
+function hasActiveRabbitScent(tabId: number, scents: Record<string, RabbitScent>): boolean {
+  const now = Date.now();
+  for (const scent of Object.values(scents)) {
+    if (scent.tabId === tabId && scent.expiresAt > now) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export { generateUUID };

@@ -180,25 +180,17 @@ async function handleMessage(message: OutgoingMessage) {
       return { action: 'ack', success: true } as const;
     }
     case 'getRabbitScentStatus': {
-      const tab = await browser.tabs.get(message.tabId);
-      const url = tab.url ?? '';
-      if (!url)
-        return {
-          action: 'rabbitScentStatusData',
-          active: false,
-          remainingMs: null,
-          uuid: null,
-        } as const;
-      const uuid = generateUUID(url);
       const scents = await rabbitScentsStorage.getValue();
-      const scent = scents[uuid];
-      if (scent && scent.expiresAt > Date.now()) {
-        return {
-          action: 'rabbitScentStatusData',
-          active: true,
-          remainingMs: scent.expiresAt - Date.now(),
-          uuid,
-        } as const;
+      const now = Date.now();
+      for (const scent of Object.values(scents)) {
+        if (scent.tabId === message.tabId && scent.expiresAt > now) {
+          return {
+            action: 'rabbitScentStatusData',
+            active: true,
+            remainingMs: scent.expiresAt - now,
+            uuid: scent.uuid,
+          } as const;
+        }
       }
       return {
         action: 'rabbitScentStatusData',
