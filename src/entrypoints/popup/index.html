@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>LazyFox</title>
+  </head>
+  <body>
+    <header class="header">
+      <h1 class="header-title">LazyFox</h1>
+      <p class="header-subtext">Tab Suspender</p>
+    </header>
+
+    <div id="error-container" class="error-container" role="alert"></div>
+
+    <section class="section">
+      <div class="button-row">
+        <button id="btn-sleep-current" class="btn btn-primary">Sleep This Tab</button>
+        <button id="btn-sleep-all" class="btn btn-primary">Sleep All</button>
+      </div>
+      <div class="button-row">
+        <button id="btn-wake-all" class="btn btn-secondary">Wake All Tabs</button>
+        <button id="btn-amphetamine" class="btn btn-accent">Amphetamine Shot</button>
+      </div>
+      <p id="amphetamine-timer" class="amphetamine-timer" aria-live="polite"></p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Settings</h2>
+
+      <div class="setting-group">
+        <label for="timeout-slider" class="setting-label">
+          Sleep after: <span id="timeout-value" class="setting-value">60 min</span>
+        </label>
+        <input
+          type="range"
+          id="timeout-slider"
+          class="range-slider"
+          min="1"
+          max="480"
+          value="60"
+        />
+      </div>
+
+      <fieldset class="setting-group">
+        <legend class="setting-label">Sleep Mode</legend>
+        <label class="radio-label">
+          <input type="radio" name="sleepMode" value="full" checked />
+          Full Sleep
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="sleepMode" value="discardOnly" />
+          Discard Only
+        </label>
+      </fieldset>
+
+      <div class="setting-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="preservePinnedTabs" checked />
+          Preserve pinned tabs
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="sleepAudibleTabs" />
+          Sleep audible tabs
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="sleepLoadingTabs" />
+          Sleep loading tabs
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="autoRestore" checked />
+          Auto-restore on focus
+        </label>
+      </div>
+
+      <div class="setting-group">
+        <label for="interval-slider" class="setting-label">
+          Check every: <span id="interval-value" class="setting-value">15 sec</span>
+        </label>
+        <input
+          type="range"
+          id="interval-slider"
+          class="range-slider"
+          min="5"
+          max="300"
+          step="5"
+          value="15"
+        />
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Den (Protected)</h2>
+      <div class="den-input-row">
+        <input
+          type="text"
+          id="den-input"
+          class="text-input"
+          placeholder="example.com"
+          aria-label="Den pattern"
+        />
+        <select id="den-type" class="select-input" aria-label="Pattern type">
+          <option value="domain">Domain</option>
+          <option value="exact">Exact</option>
+          <option value="wildcard">Wildcard</option>
+        </select>
+        <button id="btn-den-add" class="btn btn-primary btn-small">Add</button>
+      </div>
+      <div id="den-list" class="den-list"></div>
+    </section>
+
+    <footer class="footer">
+      <span id="sleeping-count">0 tabs sleeping</span>
+    </footer>
+
+    <script src="./main.ts" type="module"></script>
+  </body>
+</html>

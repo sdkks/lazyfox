@@ -39,7 +39,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/entrypoints/background.ts'],
+    files: ['src/entrypoints/**/*.ts'],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',

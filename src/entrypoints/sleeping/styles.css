@@ -1,0 +1,212 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Container */
+.sleeping-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 24px;
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Favicon */
+.favicon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  object-fit: contain;
+  background: #16213e;
+}
+
+.favicon[src=''],
+.favicon:not([src]) {
+  display: none;
+}
+
+.favicon-fallback {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  background: #16213e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: rgba(224, 224, 224, 0.3);
+}
+
+/* Tab info */
+.tab-title {
+  font-size: 20px;
+  font-weight: 700;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 8px;
+}
+
+.tab-url {
+  font-size: 14px;
+  opacity: 0.7;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 24px;
+}
+
+/* Sleep time */
+.sleep-time {
+  font-size: 16px;
+  font-style: italic;
+  opacity: 0.5;
+  margin-bottom: 32px;
+}
+
+/* Error message */
+.error-message {
+  color: #e94560;
+  font-size: 14px;
+  margin-top: 16px;
+  min-height: 20px;
+}
+
+/* Wake button */
+.btn-wake {
+  width: 200px;
+  height: 48px;
+  background: #e94560;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    filter 150ms ease,
+    transform 150ms ease;
+  letter-spacing: 1px;
+}
+
+.btn-wake:hover:not(:disabled) {
+  filter: brightness(0.85);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.btn-wake:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn-wake:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-wake:focus-visible {
+  outline: 2px solid #e94560;
+  outline-offset: 3px;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(233, 69, 96, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(233, 69, 96, 0);
+  }
+}
+
+/* Click hint */
+.click-hint {
+  font-size: 12px;
+  opacity: 0.3;
+  margin-top: 16px;
+}
+
+/* Footer */
+.footer {
+  position: absolute;
+  bottom: 16px;
+  font-size: 12px;
+  opacity: 0.3;
+  text-align: center;
+}
+
+/* Print stylesheet */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  .btn-wake,
+  .click-hint,
+  .footer,
+  .error-message {
+    display: none;
+  }
+
+  .sleep-time {
+    opacity: 1;
+    color: #333;
+    font-style: normal;
+  }
+
+  .tab-title {
+    color: black;
+  }
+
+  .tab-url {
+    color: #555;
+    opacity: 1;
+  }
+
+  .sleeping-container {
+    padding: 40px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 320px) {
+  .tab-title {
+    font-size: 16px;
+  }
+
+  .tab-url {
+    font-size: 12px;
+  }
+
+  .btn-wake {
+    width: 160px;
+    height: 40px;
+    font-size: 16px;
+  }
+}
