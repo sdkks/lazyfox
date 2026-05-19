@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/sdkks/lazyfox/compare/v1.0.0...v1.0.1) (2026-05-19)
+
+
+### Bug Fixes
+
+* match rabbit scents by tabId instead of URL-based UUID ([c1d21b0](https://github.com/sdkks/lazyfox/commit/c1d21b05b29dcfa4f5e99f30a0a90f287bd1805d))
+
 # 1.0.0 (2026-05-19)
 
 
