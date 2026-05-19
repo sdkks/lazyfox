@@ -1,16 +1,60 @@
 # LazyFox
 
-LazyFox is a lightweight, open-source tab suspender that automatically puts inactive tabs to sleep. It saves CPU, GPU, and memory by freeing resources consumed by tabs you are not actively using.
+LazyFox is a lean, open-source browser extension that automatically puts inactive tabs to sleep, saving CPU, GPU, and memory. Think of it as a lazy fox — it only chases (keeps awake) the tab you're actively using, and lets the rest nap.
+
+## How It Works
+
+**Tab Sleeping**: When a tab sits inactive longer than your configured timeout (default 60 minutes), LazyFox replaces the page with a lightweight "sleeping page" that shows the tab's title, URL, and a wake button. The original page state is saved so it can be restored instantly. The sleeping page itself uses near-zero resources.
+
+**Tab Discarding**: An alternative, even lighter mode that uses the browser's built-in tab discarding (`tabs.discard()`). No sleeping page — the browser unloads the tab entirely and shows its default discarded state.
+
+**Eligibility Check**: Every 15 seconds (configurable), the background service worker runs through all open tabs and checks each one against a set of rules. A tab is only put to sleep if it passes ALL checks:
+
+1. Has a real URL (not a restricted protocol like `chrome://` or `about:`)
+2. Is not already sleeping or discarded
+3. Is not the currently active tab
+4. Is not pinned (configurable — preserve pinned tabs is on by default)
+5. Is not playing audio (configurable)
+6. Is not still loading (configurable)
+7. Has been inactive longer than the sleep timeout
+8. Is not in your Den (protected patterns)
+9. Does not have an active Rabbit Scent
+
+At most 5 tabs are slept per check cycle to avoid browser throttling.
+
+**Waking**: Click the "Wake Up" button, click anywhere on the sleeping page, or switch to the tab (if auto-restore is on). The original URL and tab state (pinned, muted) are restored instantly.
+
+## Key Concepts
+
+### Rabbit Scent
+
+A temporary keep-awake for a specific tab. Give a tab a "rabbit scent" and the fox won't chase it — the tab stays awake for the configured duration (default 60 minutes), regardless of the sleep timeout. Useful when you're stepping away from a tab briefly but don't want it to sleep. Rabbit scents can be removed early from the popup.
+
+(The name comes from the macOS tool "Amphetamine" which keeps computers awake, adapted to fit the fox theme — the fox avoids rabbit-scented tabs.)
+
+### Den
+
+Your list of protected URL patterns. Tabs matching a den entry are never put to sleep, even if they're inactive. Supports three match types:
+
+- **Exact**: matches the full URL exactly (`https://docs.google.com/document/abc123`)
+- **Domain**: matches the domain and all subdomains (`google.com` protects `mail.google.com`, `docs.google.com`, etc.)
+- **Wildcard**: glob-style pattern (`https://github.com/*/pull/*`)
+
+### Sleep Modes
+
+- **Full Sleep** (default): Replaces the tab with a dark-themed sleeping page showing the original tab's info and a wake button. Most resource-efficient.
+- **Discard Only**: Uses the browser's native `tabs.discard()` API. No custom page — the tab shows the browser's default discarded appearance, and wakes when you switch to it.
 
 ## Features
 
-- **Automatic tab sleeping** -- sleeps inactive tabs after a configurable timeout
-- **Two sleep modes** -- Full Sleep (replaces tab with a lightweight sleeping page) and Discard (uses browser-native tab discarding)
-- **Amphetamine Shots** -- temporarily keep specific tabs awake beyond the sleep timeout
-- **Den (protected tabs)** -- protect important domains from ever being slept
-- **Dark-themed UI** -- popup and sleeping page styled with a clean dark palette
-- **Privacy-first** -- no tracking, no ads, no data collection. Runs entirely on-device
-- **Cross-browser** -- works on Chrome and Firefox (Manifest V3)
+- **Automatic tab sleeping** — sleeps inactive tabs after a configurable timeout (default 60 min)
+- **Two sleep modes** — Full Sleep (custom sleeping page) and Discard (native browser discard)
+- **Rabbit Scent** — temporarily keep specific tabs awake, with configurable duration
+- **Den** — protect important domains/pages from ever being put to sleep
+- **Dark-themed UI** — popup and sleeping page styled with a clean dark palette
+- **Privacy-first** — no tracking, no ads, no remote code. Everything runs locally
+- **Cross-browser** — Chrome and Firefox from a single codebase (Manifest V3)
+- **Open source** — MIT license
 
 ## Installation
 
@@ -28,41 +72,23 @@ Install from [Firefox Add-ons](#) (link coming soon).
 git clone https://github.com/tabber/lazyfox.git
 cd lazyfox
 
-# Install dependencies
 pnpm install
 
-# Start dev mode (Chrome)
-pnpm dev
+pnpm dev          # Dev mode (Chrome)
+pnpm dev:firefox  # Dev mode (Firefox)
 
-# Start dev mode (Firefox)
-pnpm dev:firefox
-
-# Production build
-pnpm build          # Chrome
-pnpm build:firefox  # Firefox
-
-# Create distribution ZIPs
-pnpm zip
-pnpm zip:firefox
+pnpm build          # Production build (Chrome)
+pnpm build:firefox  # Production build (Firefox)
 ```
-
-## Usage
-
-1. Click the LazyFox icon in your browser toolbar to open the popup.
-2. Configure your sleep timeout, mode, and protected domains (Den).
-3. Tabs inactive longer than the timeout will automatically be put to sleep.
-4. Use "Sleep This Tab" or "Sleep All" to sleep tabs immediately.
-5. Give tabs an "Amphetamine Shot" to keep them awake temporarily.
-6. Sleeping tabs show a lightweight page with a "Wake Up" button to restore them.
 
 ## Development
 
 ### Tech Stack
 
-- [WXT](https://wxt.dev) -- framework for cross-browser extension development
-- [TypeScript](https://www.typescriptlang.org/) -- strict mode
+- [WXT](https://wxt.dev) — framework for cross-browser extension development
+- [TypeScript](https://www.typescriptlang.org/) — strict mode
 - Manifest V3
-- Vitest for testing
+- [Vitest](https://vitest.dev) for testing
 - ESLint + Prettier for code quality
 
 ### Project Structure
@@ -71,7 +97,7 @@ pnpm zip:firefox
 src/
   entrypoints/
     background.ts      # Service worker (alarms, message routing, tab sleep/wake)
-    popup/             # Popup UI (settings, controls, den management)
+    popup/             # Popup UI (controls, settings, den editor)
     sleeping/          # Sleeping page (shown when a tab is put to sleep)
   types/
     index.ts           # Shared type definitions and message contracts
@@ -79,13 +105,13 @@ src/
     alarms.ts          # Alarm scheduling helpers
     logger.ts          # Namespaced logger
     storage.ts         # WXT storage wrappers
-    tabEligibility.ts  # Tab sleep eligibility checks
+    tabEligibility.ts  # Tab sleep eligibility checks (29 unit tests)
   config.ts            # Configuration defaults and types
 public/
   icons/               # Extension icons (16-128px)
 ```
 
-### Available Scripts
+### Scripts
 
 | Script | Description |
 |--------|-------------|
@@ -94,11 +120,11 @@ public/
 | `pnpm build` | Production build for Chrome |
 | `pnpm build:firefox` | Production build for Firefox |
 | `pnpm zip` | Create Chrome distribution ZIP |
-| `pnpm zip:firefox` | Create Firefox distribution ZIP |
-| `pnpm typecheck` | Run TypeScript type checking |
-| `pnpm lint` | Run ESLint |
-| `pnpm format` | Run Prettier |
-| `pnpm test` | Run Vitest test suite |
+| `pnpm zip:firefox` | Create Firefox distribution ZIP (includes sources) |
+| `pnpm typecheck` | TypeScript type checking |
+| `pnpm lint` | ESLint |
+| `pnpm format` | Prettier |
+| `pnpm test` | Vitest test suite |
 
 ## License
 
