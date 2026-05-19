@@ -25,7 +25,8 @@ The build is deterministic given the same `pnpm-lock.yaml` and Node.js version. 
 After `pnpm build:firefox`, the `.output/` directory contains:
 
 - `firefox-mv3/` -- the unpacked extension directory
-- `lazyfox-1.0.0-firefox.zip` -- the packaged extension (for submission)
+- `lazyfox-{version}-firefox.zip` -- the packaged extension (for submission)
+- `lazyfox-{version}-sources.zip` -- the source code (for review)
 
 ## Source Code vs Built Code
 
