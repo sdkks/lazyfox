@@ -29,9 +29,9 @@ export default defineConfig({
     browser_specific_settings: {
       gecko: {
         id: 'lazyfox@tabber.local',
-        strict_min_version: '115.0',
+        strict_min_version: '140.0',
         data_collection_permissions: {
-          required: [],
+          required: ['none'],
           // @ts-expect-error — Firefox requires 'usage', WXT types haven't added it
           usage: false,
           technical_interaction: false,
