@@ -5,8 +5,8 @@ const log = createLogger('sleeping');
 
 /* ---------- DOM references ---------- */
 const favicon = document.getElementById('favicon') as HTMLImageElement;
-const tabTitle = document.getElementById('tab-title') as HTMLHeadingElement;
-const tabUrl = document.getElementById('tab-url') as HTMLParagraphElement;
+const tabTitle = document.getElementById('tab-title') as HTMLAnchorElement;
+const tabUrl = document.getElementById('tab-url') as HTMLAnchorElement;
 const sleepTime = document.getElementById('sleep-time') as HTMLParagraphElement;
 const btnWake = document.getElementById('btn-wake') as HTMLButtonElement;
 const errorMessage = document.getElementById('error-message') as HTMLParagraphElement;
@@ -96,6 +96,16 @@ function setupFaviconFallback(): void {
   });
 }
 
+function setPageFavicon(url: string): void {
+  let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.head.appendChild(link);
+  }
+  link.href = url;
+}
+
 /* ---------- Wake ---------- */
 
 async function wakeUp(source: string): Promise<void> {
@@ -117,11 +127,16 @@ async function wakeUp(source: string): Promise<void> {
     await sendMessage({ action: 'wakeTab', uuid });
     // The tab will navigate away on success — no further action needed.
   } catch (err) {
-    showError('Failed to wake tab — the extension may have been reloaded');
-    log.error('wakeTab error:', err);
-    hasWoken = false;
-    btnWake.disabled = false;
-    btnWake.textContent = 'WAKE UP';
+    log.error('wakeTab error, falling back to direct navigation:', err);
+    const targetUrl = tabUrl.href;
+    if (targetUrl && targetUrl !== '#' && targetUrl !== window.location.href) {
+      window.location.href = targetUrl;
+    } else {
+      showError('Failed to wake tab — the extension may have been reloaded');
+      hasWoken = false;
+      btnWake.disabled = false;
+      btnWake.textContent = 'WAKE UP';
+    }
   }
 }
 
@@ -145,13 +160,18 @@ async function init(): Promise<void> {
   if (fallbackTitle) {
     const decoded = safeDecode(fallbackTitle);
     tabTitle.textContent = decoded;
-    document.title = `Sleeping — ${decoded}`;
+    document.title = `\u{1F4A4} ${decoded}`;
   }
   if (fallbackUrl) {
-    tabUrl.textContent = safeDecode(fallbackUrl);
+    const decodedUrl = safeDecode(fallbackUrl);
+    tabUrl.textContent = decodedUrl;
+    tabUrl.href = decodedUrl;
+    tabTitle.href = decodedUrl;
   }
   if (fallbackFavicon) {
-    favicon.src = safeDecode(fallbackFavicon);
+    const faviconUrl = safeDecode(fallbackFavicon);
+    favicon.src = faviconUrl;
+    setPageFavicon(faviconUrl);
   }
 
   // Fetch stored tab info
@@ -181,15 +201,23 @@ async function init(): Promise<void> {
     // Query param fallbacks are already displayed
     sleepTime.textContent = 'Sleeping since: some time ago';
   }
+
+  // Fallback: use LazyFox icon as page favicon if none was set
+  if (!document.querySelector('link[rel="icon"]')) {
+    setPageFavicon(browser.runtime.getURL('icon-32.png' as never));
+  }
 }
 
 function populateFromStoredInfo(info: StoredTabInfo): void {
   tabTitle.textContent = info.title || 'Untitled';
-  document.title = `Sleeping — ${info.title || 'Untitled'}`;
+  document.title = `\u{1F4A4} ${info.title || 'Untitled'}`;
   tabUrl.textContent = info.url;
+  tabUrl.href = info.url;
+  tabTitle.href = info.url;
 
-  if (info.faviconUrl && !favicon.src) {
+  if (info.faviconUrl) {
     favicon.src = info.faviconUrl;
+    setPageFavicon(info.faviconUrl);
   }
 
   sleepTimestamp = info.sleepTimestamp;
@@ -208,6 +236,8 @@ document.body.addEventListener('click', (e) => {
   if (e.target === btnWake || btnWake.contains(e.target as Node)) return;
   // Don't attempt wake if no UUID (tab-not-found state)
   if (hasWoken || !getStoredUuid()) return;
+  // Let anchor links navigate directly
+  if (e.target instanceof HTMLAnchorElement) return;
   void wakeUp('body-click');
 });
 
