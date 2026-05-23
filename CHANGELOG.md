@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/sdkks/lazyfox/compare/v1.0.3...v1.0.4) (2026-05-23)
+
+
+### Bug Fixes
+
+* improve sleeping tab UX — compact title, favicon, clickable links, wake fallback ([865d32d](https://github.com/sdkks/lazyfox/commit/865d32dc9ef0584592ae395d80ce026803e0ee3a))
+
 ## [1.0.3](https://github.com/sdkks/lazyfox/compare/v1.0.2...v1.0.3) (2026-05-19)
 
 
